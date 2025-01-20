@@ -1,24 +1,33 @@
 import os
-import time
 
 # Função para limpar a tela, com suporte para diferentes sistemas operacionais
 def limpar_tela():
     os.system("cls" if os.name == "nt" else "clear")
 
+
 # Dicionário contendo o portfólio de carros disponíveis (chave: código do carro, valor: [modelo, preço por dia])
-portifolio = {
-"0": ["Chevrolet Tracker", 120], 
-"1": ["Chevrolet Onix", 90], 
-"2": ["Chevrolet Spin", 150], 
-"3": ["Hyunday HB20", 85],
-"4": ["Hyundai Tucson", 120], 
-"5": ["Fiat Uno", 60], 
-"6": ["Fiat Mob", 70], 
-"7": ["Fiat Pulse", 130]
-}
+portifolio = [
+("Chevrolet Tracker", 120), 
+("Chevrolet Onix", 90), 
+("Chevrolet Spin", 150), 
+("Hyunday HB20", 85),
+("Hyundai Tucson", 120), 
+("Fiat Uno", 60), 
+("Fiat Mob", 70), 
+("Fiat Pulse", 130 )          
+]
+
+def mostrar_portifolio(portifolio):
+    for i, car in enumerate(portifolio):
+        print(f"[{i}] {car[0]} - R$ {car[1]} /dia")
+
+def mostrar_alugados(alugados):
+    for i, car in enumerate(alugados):
+        print(f"[{i}] {car[0]} - R$ {car[1]} /dia")
 
 # Dicionário para armazenar os carros alugados (chave: código do carro, valor: [modelo, preço por dia])
-rent = {}
+alugados = []
+temp = []
 
 # Loop principal do programa
 while True:
@@ -39,28 +48,24 @@ while True:
 
     # Opção 0: Mostrar portfólio
     if comando == "0":
+        limpar_tela()
         print("=" * 10)
-        for cod, desc in portifolio.items():
-            print(f"[{cod}] {desc[0]} - R$ {desc[1]} /dia")  
-        print("=" * 10)
-        print("0 - CONTINUAR, 1 - SAIR")
-        resp = input(">>> ")
-        if resp not in ["0", "1"]:
-            limpar_tela()
-            print("Digite um valor válido!")
-            continue
-        elif resp == "1":
-            limpar_tela()
-            break
-        else:
-            limpar_tela()
+        mostrar_portifolio(portifolio) 
     
     # Opção 1: Alugar um carro
     elif comando == "1":
+        print("[ALUGAR] - veja o portifólio de carros disponíveis.\n")
+        mostrar_portifolio(portifolio)
         print("=" * 10)
         print("Escolha o código do carro: ")
-        cod_car = (input(">>> "))
-        if cod_car not in list(portifolio.keys()):
+        try:
+            cod_car = int(input(">>> "))
+        except ValueError:
+            limpar_tela()
+            print("Digite um número válido!")
+            continue
+
+        if cod_car < 0 or cod_car >= len(portifolio):
             print("Carro não disponível ou já alugado! Escolha um código válido.")
             input("\nPressione Enter para continuar...")
             continue
@@ -72,7 +77,6 @@ while True:
             limpar_tela()
             print("Digite um número válido!")
             continue
-
         car = portifolio[cod_car]
         limpar_tela()
         print(f"\nVocê escolheu {car[0]} por {dias} dias.")
@@ -85,52 +89,45 @@ while True:
             print("Digite um valor válido.")
             continue
         if resp == "0":
-            temp = portifolio.pop(cod_car, None)
-            if temp is not None:
-                rent[cod_car] = temp
-            print(f"\nParabéns, você alugou o {car[0]} por {dias} dia(s).")
+            carro_alugado = portifolio.pop(cod_car)
+            alugados.append(carro_alugado)
+            print(f"\nParabéns, você alugou o {carro_alugado[0]} por {dias} dia(s)")
 
-        print("=" * 10)
-        print("0 - CONTINUAR | 1 - SAIR")
-        resp = input(">>> ")
-        if resp not in ["0", "1"]:
-            limpar_tela()
-            print("Digite um valor válido.")
-            continue
-        if resp == "1":
-            break
 
     # Opção 2: Devolver um carro
     elif comando == "2":
-        if len(rent) == 0:
+        if len(alugados) == 0:
             print("Não há carros alugados.")
-            time.sleep(2)
+            input("\nPressione Enter para continuar...")
         else: 
             print("Segue a lista de carros alugados. Qual você deseja devolver?")
-            for cod, desc in rent.items():
-                print(f"[{cod}] {desc[0]} - R$ {desc[1]} /dia")
+            mostrar_alugados(alugados)
         
             print("Escolha o código do carro que deseja devolver: ")
-            cod_car = input(">>> ")
-            if cod_car not in list(rent.keys()):
+            try:
+                cod_car = int(input(">>> "))
+            except ValueError:
                 limpar_tela()
+                print("Digite um número válido!")
+                continue
+            
+            if cod_car < 0 or cod_car >= len(alugados):
                 print("Digite um código válido!")
+                input("\nPressione Enter para continuar...")
                 continue
             else:
-                car = list(rent[cod_car])
-                temp = rent.pop(cod_car, None)
-                if temp is not None:
-                    portifolio[cod_car] = temp
-                print(f"Obrigado por devolver o carro {car[0]}")
+                carro_devolvido = alugados.pop(cod_car)
+                portifolio.append(carro_devolvido)
+                print(f"Obrigado por devolver o carro {carro_devolvido[0]}.")
 
-                print("=" * 10)
-                print("0 - CONTINUAR | 1 - SAIR")
-                resp = input(">>> ")
-                if resp not in ["0", "1"]:
-                    limpar_tela()
-                    print("Digite um valor válido.")
-                    continue
-                if resp == "1":
-                    limpar_tela()
-                    break
+    
+    print("=" * 10)
+    print("0 - CONTINUAR | 1 - SAIR")
+    resp = input(">>> ")
+    if resp not in ["0", "1"]:
+        limpar_tela()
+        print("Digite um valor válido.")
+        continue
+    if resp == "1":
+        break
 
