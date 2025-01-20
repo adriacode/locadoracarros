@@ -120,7 +120,7 @@ while True:
                 portifolio.append(carro_devolvido)
                 print(f"Obrigado por devolver o carro {carro_devolvido[0]}.")
 
-    
+    # Pergunta se o usuário deseja continuar ou sair
     print("=" * 10)
     print("0 - CONTINUAR | 1 - SAIR")
     resp = input(">>> ")
